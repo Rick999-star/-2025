@@ -152,10 +152,12 @@
             const questionDiv = document.createElement('div');
             questionDiv.className = 'bg-white p-6 rounded-lg shadow-md';
             
-            let content = `<p class="font-semibold text-lg mb-4">${index + 1}. ${q.question.replace('___', '<input type="text" id="q${index}" class="border-b-2 border-gray-300 focus:border-blue-500 outline-none">')}</p>`;
-            
-            if (q.type === 'choice') {
-                content = `<p class="font-semibold text-lg mb-4">${index + 1}. ${q.question}</p>`;
+            let content = '';
+
+            if (q.type === 'fill') {
+                content += `<p class="font-semibold text-lg mb-4">${index + 1}. ${q.question.replace('___', `<input type="text" id="q${index}" class="border-b-2 border-gray-300 focus:border-blue-500 outline-none">`)}</p>`;
+            } else { // 'choice'
+                content += `<p class="font-semibold text-lg mb-4">${index + 1}. ${q.question}</p>`;
                 content += '<div class="space-y-2">';
                 q.options.forEach(option => {
                     content += `<div><label class="inline-flex items-center"><input type="radio" name="q${index}" value="${option}" class="form-radio h-5 w-5 text-blue-600"> <span class="ml-2">${option}</span></label></div>`;
@@ -198,3 +200,4 @@
     </script>
 </body>
 </html>
+
