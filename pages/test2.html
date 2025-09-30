@@ -27,6 +27,11 @@
         <div id="quiz-container" class="space-y-6">
             <!-- Questions will be injected here by JavaScript -->
         </div>
+
+        <div id="total-score-container" class="text-center mt-8">
+            <!-- Total score will be displayed here -->
+        </div>
+
          <div class="text-center mt-8">
              <a href="../index.html" class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-300">ホームに戻る</a>
         </div>
@@ -146,6 +151,9 @@
             }
         ];
 
+        let score = 0;
+        let answeredCount = 0;
+        const totalQuestions = quizData.length;
         const quizContainer = document.getElementById('quiz-container');
 
         quizData.forEach((q, index) => {
@@ -165,14 +173,14 @@
                 content += '</div>';
             }
             
-            content += `<div class="mt-4"><button onclick="checkAnswer(${index})" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">解答</button></div>`;
+            content += `<div class="mt-4"><button onclick="checkAnswer(${index}, this)" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200">解答</button></div>`;
             content += `<p id="result${index}" class="mt-2"></p>`;
 
             questionDiv.innerHTML = content;
             quizContainer.appendChild(questionDiv);
         });
 
-        function checkAnswer(index) {
+        function checkAnswer(index, button) {
             const q = quizData[index];
             const resultEl = document.getElementById(`result${index}`);
             let userAnswer;
@@ -181,9 +189,9 @@
                 userAnswer = document.getElementById(`q${index}`).value.trim();
             } else {
                 const radioButtons = document.getElementsByName(`q${index}`);
-                for (const button of radioButtons) {
-                    if (button.checked) {
-                        userAnswer = button.value;
+                for (const rb of radioButtons) {
+                    if (rb.checked) {
+                        userAnswer = rb.value;
                         break;
                     }
                 }
@@ -192,10 +200,44 @@
             if (userAnswer && userAnswer.toLowerCase() === q.answer.toLowerCase()) {
                 resultEl.textContent = '正解！';
                 resultEl.className = 'mt-2 correct';
+                score++;
             } else {
                 resultEl.textContent = `不正解。正解は「${q.answer}」です。`;
                 resultEl.className = 'mt-2 incorrect';
             }
+            
+            button.disabled = true;
+            button.classList.add('bg-gray-400', 'cursor-not-allowed');
+            button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+
+            answeredCount++;
+
+            if (answeredCount === totalQuestions) {
+                showTotalScore();
+            }
+        }
+
+        function showTotalScore() {
+            const scoreContainer = document.getElementById('total-score-container');
+            let message = '';
+            const percentage = (score / totalQuestions) * 100;
+            if (percentage === 100) {
+                message = '素晴らしい！全問正解です！';
+            } else if (percentage >= 80) {
+                message = '優秀です！あともう一歩！';
+            } else if (percentage >= 60) {
+                message = '合格ラインです！復習も忘れずに。';
+            } else {
+                message = 'もう少し頑張りましょう！';
+            }
+
+            scoreContainer.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-lg text-gray-800">
+                    <p class="text-xl mb-2">${message}</p>
+                    <p class="text-3xl font-bold">合計点: ${score} / ${totalQuestions}</p>
+                    <button onclick="location.reload()" class="mt-4 bg-green-500 text-white font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300">もう一度挑戦する</button>
+                </div>
+            `;
         }
     </script>
 </body>
